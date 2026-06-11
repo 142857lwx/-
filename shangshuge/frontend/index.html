@@ -1,0 +1,1594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>尚书阁</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #5b21b6;
+            --primary-light: #7c3aed;
+            --primary-dark: #4c1d95;
+            --primary-hover: #6d28d9;
+            --secondary-color: #8b5cf6;
+            --success-color: #16a34a;
+            --success-light: #22c55e;
+            --warning-color: #d97706;
+            --warning-light: #f59e0b;
+            --danger-color: #dc2626;
+            --danger-light: #ef4444;
+            --info-color: #2563eb;
+            --info-light: #3b82f6;
+            --bg-sidebar: linear-gradient(180deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
+            --bg-sidebar-hover: rgba(255, 255, 255, 0.08);
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --text-muted: #9ca3af;
+            --text-sidebar: rgba(255, 255, 255, 0.85);
+            --text-sidebar-muted: rgba(255, 255, 255, 0.6);
+            --border-color: #e5e7eb;
+            --border-light: #f3f4f6;
+            --bg-card: #ffffff;
+            --bg-page: #f9fafb;
+            --bg-hover: #f3f4f6;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-glow: 0 0 20px rgba(91, 33, 182, 0.3);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            --radius-2xl: 1.25rem;
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --font-xs: 0.75rem;
+            --font-sm: 0.875rem;
+            --font-base: 1rem;
+            --font-lg: 1.125rem;
+            --font-xl: 1.25rem;
+            --font-2xl: 1.5rem;
+            --font-3xl: 1.875rem;
+            --font-4xl: 2.25rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            background-color: var(--bg-page);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+            color: var(--text-primary);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background: var(--bg-sidebar);
+            width: 240px;
+            flex-shrink: 0;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-xl);
+            overflow-y: auto;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .sidebar .sidebar-header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar .sidebar-header h4 {
+            color: #ffffff;
+            font-weight: 700;
+            font-size: var(--font-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin: 0;
+        }
+        
+        .sidebar .sidebar-header i {
+            font-size: var(--font-2xl);
+            opacity: 0.95;
+        }
+        
+        .sidebar .nav {
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-sm);
+        }
+        
+        .sidebar .nav-item {
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .sidebar .nav-link {
+            color: var(--text-sidebar-muted);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition-normal);
+            font-weight: 500;
+            font-size: var(--font-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sidebar .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--primary-light);
+            transform: scaleY(0);
+            transition: transform var(--transition-normal);
+        }
+        
+        .sidebar .nav-link:hover {
+            color: var(--text-sidebar);
+            background: var(--bg-sidebar-hover);
+            transform: translateX(4px);
+        }
+        
+        .sidebar .nav-link:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar .nav-link.active {
+            background: linear-gradient(135deg, rgba(91, 33, 182, 0.4) 0%, rgba(124, 58, 237, 0.3) 100%);
+            color: #ffffff;
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .sidebar .nav-link.active::before {
+            transform: scaleY(1);
+        }
+        
+        .sidebar .nav-link i {
+            width: 1.25rem;
+            font-size: var(--font-lg);
+            flex-shrink: 0;
+        }
+        
+        .sidebar .nav-link.text-danger {
+            color: rgba(239, 68, 68, 0.8);
+        }
+        
+        .sidebar .nav-link.text-danger:hover {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        
+        .main-content {
+            margin-left: 240px;
+            min-height: 100vh;
+            padding: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+        }
+        
+        .top-navbar {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--spacing-xl);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: var(--spacing-lg);
+            z-index: 50;
+            border: 1px solid var(--border-light);
+        }
+        
+        .top-navbar .page-title {
+            font-size: var(--font-xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        
+        .top-navbar .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+        
+        .btn {
+            font-weight: 600;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--radius-lg);
+            transition: all var(--transition-fast);
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: var(--font-sm);
+            cursor: pointer;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left var(--transition-slow);
+        }
+        
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(91, 33, 182, 0.3);
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, var(--success-light) 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+        }
+        
+        .btn-success:hover {
+            background: linear-gradient(135deg, #15803d 0%, var(--success-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.4);
+        }
+        
+        .btn-success:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color) 0%, var(--warning-light) 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(217, 119, 6, 0.3);
+        }
+        
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #b45309 0%, var(--warning-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(217, 119, 6, 0.4);
+        }
+        
+        .btn-warning:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, var(--danger-light) 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+        }
+        
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #b91c1c 0%, var(--danger-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.4);
+        }
+        
+        .btn-danger:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-info {
+            background: linear-gradient(135deg, var(--info-color) 0%, var(--info-light) 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-info:hover {
+            background: linear-gradient(135deg, #1d4ed8 0%, var(--info-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        .btn-info:active {
+            transform: translateY(-1px);
+        }
+        
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+        }
+        
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(91, 33, 182, 0.3);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(107, 114, 128, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.4);
+        }
+        
+        .btn-sm {
+            padding: var(--spacing-xs) var(--spacing-md);
+            font-size: var(--font-xs);
+        }
+        
+        .btn-sm:hover {
+            transform: translateY(-1px);
+        }
+        
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-normal);
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            box-shadow: var(--shadow-xl);
+            border-color: var(--border-color);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            border-bottom: 1px solid var(--border-color);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0 !important;
+            padding: var(--spacing-lg);
+        }
+        
+        .card-header h5 {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0;
+            font-size: var(--font-lg);
+        }
+        
+        .card-body {
+            padding: var(--spacing-lg);
+        }
+        
+        .card-footer {
+            background: #fafafa;
+            border-top: 1px solid var(--border-color);
+            border-radius: 0 0 var(--radius-xl) var(--radius-xl) !important;
+            padding: var(--spacing-md) var(--spacing-lg);
+        }
+        
+        .dashboard-card {
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition-normal);
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 150%;
+            height: 150%;
+            opacity: 0.1;
+            transition: opacity var(--transition-normal);
+        }
+        
+        .dashboard-card:hover::before {
+            opacity: 0.15;
+        }
+        
+        .dashboard-card.bg-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+            box-shadow: 0 4px 20px rgba(91, 33, 182, 0.4);
+        }
+        
+        .dashboard-card.bg-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, var(--success-light) 100%);
+            box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4);
+        }
+        
+        .dashboard-card.bg-info {
+            background: linear-gradient(135deg, var(--info-color) 0%, var(--info-light) 100%);
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+        }
+        
+        .dashboard-card.bg-danger {
+            background: linear-gradient(135deg, var(--danger-color) 0%, var(--danger-light) 100%);
+            box-shadow: 0 4px 20px rgba(220, 38, 38, 0.4);
+        }
+        
+        .dashboard-card.bg-primary::before {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath fill='white' d='M100,10 L120,50 L160,50 L125,75 L135,115 L100,90 L65,115 L75,75 L40,50 L80,50 Z'/%3E%3C/svg%3E");
+            background-size: 100px;
+            background-repeat: no-repeat;
+            background-position: right bottom;
+        }
+        
+        .dashboard-card.bg-success::before {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+            background-size: 100px;
+            background-repeat: no-repeat;
+            background-position: right bottom;
+        }
+        
+        .dashboard-card.bg-info::before {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8-8-8z'/%3E%3C/svg%3E");
+            background-size: 100px;
+            background-repeat: no-repeat;
+            background-position: right bottom;
+        }
+        
+        .dashboard-card.bg-danger::before {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z'/%3E%3C/svg%3E");
+            background-size: 100px;
+            background-repeat: no-repeat;
+            background-position: right bottom;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .dashboard-card .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        
+        .dashboard-card .card-icon {
+            font-size: var(--font-4xl);
+            opacity: 0.5;
+            transition: all var(--transition-normal);
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+        }
+        
+        .dashboard-card:hover .card-icon {
+            transform: scale(1.15);
+            opacity: 0.7;
+        }
+        
+        .dashboard-card .card-value {
+            font-size: var(--font-4xl);
+            font-weight: 800;
+            margin-top: var(--spacing-sm);
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .dashboard-card .card-label {
+            font-size: var(--font-sm);
+            opacity: 0.9;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        
+        .table {
+            margin-bottom: 0;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table thead th {
+            background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--text-secondary);
+            padding: var(--spacing-md) var(--spacing-lg);
+            text-align: left;
+            font-size: var(--font-sm);
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        
+        .table tbody td {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-bottom: 1px solid var(--border-light);
+            font-size: var(--font-sm);
+            color: var(--text-primary);
+        }
+        
+        .table tbody tr {
+            transition: all var(--transition-fast);
+        }
+        
+        .table tbody tr:hover {
+            background-color: var(--bg-hover);
+        }
+        
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .badge {
+            font-weight: 600;
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-xs);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            text-transform: capitalize;
+        }
+        
+        .badge-primary {
+            background: rgba(91, 33, 182, 0.15);
+            color: var(--primary-color);
+        }
+        
+        .badge-success {
+            background: rgba(22, 163, 74, 0.15);
+            color: var(--success-color);
+        }
+        
+        .badge-warning {
+            background: rgba(217, 119, 6, 0.15);
+            color: var(--warning-color);
+        }
+        
+        .badge-danger {
+            background: rgba(220, 38, 38, 0.15);
+            color: var(--danger-color);
+        }
+        
+        .badge-info {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--info-color);
+        }
+        
+        .badge-secondary {
+            background: rgba(107, 114, 128, 0.15);
+            color: var(--text-secondary);
+        }
+        
+        .form-control {
+            border: 2px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-md) var(--spacing-lg);
+            transition: all var(--transition-fast);
+            font-size: var(--font-sm);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            width: 100%;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(91, 33, 182, 0.15);
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+            display: block;
+            font-size: var(--font-sm);
+        }
+        
+        .dropdown-menu {
+            border: none;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            padding: 0.25rem;
+        }
+        
+        .dropdown-menu .dropdown-item {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm);
+            transition: background-color var(--transition-fast);
+        }
+        
+        .dropdown-menu .dropdown-item:hover {
+            background-color: rgba(79, 70, 229, 0.1);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+        }
+        
+        .btn-notification {
+            position: relative;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-notification:hover {
+            background: rgba(79, 70, 229, 0.1);
+        }
+        
+        .modal-content {
+            border: none;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-bottom: 1px solid var(--border-color);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+        }
+        
+        .modal-header .modal-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .modal-header .close {
+            opacity: 0.6;
+            transition: opacity var(--transition-fast);
+        }
+        
+        .modal-header .close:hover {
+            opacity: 1;
+        }
+        
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, rgba(91, 33, 182, 0.05) 0%, rgba(124, 58, 237, 0.05) 50%, rgba(139, 92, 246, 0.05) 100%);
+        }
+        
+        .login-card {
+            width: 100%;
+            max-width: 440px;
+            border-radius: var(--radius-2xl);
+            box-shadow: 0 25px 50px -12px rgba(91, 33, 182, 0.25);
+            overflow: hidden;
+            border: 1px solid var(--border-light);
+        }
+        
+        .login-card .card-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 50%, var(--secondary-color) 100%);
+            border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+        
+        .login-card .card-header h3 {
+            color: white;
+            font-weight: 800;
+            font-size: var(--font-2xl);
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-md);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-card .card-body {
+            padding: var(--spacing-xl);
+        }
+        
+        .alert {
+            border: none;
+            border-radius: var(--radius-md);
+        }
+        
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--info-color);
+        }
+        
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .text-sm {
+            font-size: 0.875rem;
+        }
+        
+        .text-xs {
+            font-size: 0.75rem;
+        }
+        
+        .font-weight-bold {
+            font-weight: 700;
+        }
+        
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+        
+        .mt-4 {
+            margin-top: 1.5rem;
+        }
+        
+        .ml-1 {
+            margin-left: 0.25rem;
+        }
+        
+        .ml-2 {
+            margin-left: 0.5rem;
+        }
+        
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+            
+            .top-navbar {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+            
+            .dashboard-card {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <div v-if="!isLoggedIn" class="login-container">
+            <div class="login-card card">
+                <div class="card-header">
+                    <h3><i class="fas fa-book-open"></i> 尚书阁</h3>
+                </div>
+                <div class="card-body">
+                    <form v-if="loginTab === 'login'" @submit.prevent="login">
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input v-model="loginForm.username" type="text" class="form-control" placeholder="请输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input v-model="loginForm.password" type="password" class="form-control" placeholder="请输入密码">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block">登录</button>
+                        <p class="text-center mt-3">
+                            <a href="#" @click="loginTab = 'register'">还没有账号？立即注册</a>
+                        </p>
+                        <p class="text-center text-muted text-sm">
+                            测试账号：admin/admin | student1/password
+                        </p>
+                    </form>
+                    <form v-else @submit.prevent="register">
+                        <div class="form-group">
+                            <label>用户名</label>
+                            <input v-model="registerForm.username" type="text" class="form-control" placeholder="请输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label>密码</label>
+                            <input v-model="registerForm.password" type="password" class="form-control" placeholder="请输入密码">
+                        </div>
+                        <div class="form-group">
+                            <label>真实姓名</label>
+                            <input v-model="registerForm.real_name" type="text" class="form-control" placeholder="请输入真实姓名">
+                        </div>
+                        <div class="form-group">
+                            <label>学号</label>
+                            <input v-model="registerForm.student_id" type="text" class="form-control" placeholder="请输入学号">
+                        </div>
+                        <div class="form-group">
+                            <label>专业</label>
+                            <input v-model="registerForm.major" type="text" class="form-control" placeholder="请输入专业">
+                        </div>
+                        <button type="submit" class="btn btn-success btn-block">注册</button>
+                        <p class="text-center mt-3">
+                            <a href="#" @click="loginTab = 'login'">已有账号？立即登录</a>
+                        </p>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div v-else>
+            <nav class="sidebar">
+                <div class="sidebar-header">
+                    <h4><i class="fas fa-book-open"></i> 尚书阁</h4>
+                </div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a href="#dashboard" @click="currentPage = 'dashboard'" class="nav-link" :class="{active: currentPage === 'dashboard'}">
+                            <i class="fas fa-tachometer-alt"></i> 数据看板
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#books" @click="currentPage = 'books'" class="nav-link" :class="{active: currentPage === 'books'}">
+                            <i class="fas fa-book"></i> 图书管理
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#borrow" @click="currentPage = 'borrow'" class="nav-link" :class="{active: currentPage === 'borrow'}">
+                            <i class="fas fa-clipboard-list"></i> 借阅记录
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#recommend" @click="currentPage = 'recommend'" class="nav-link" :class="{active: currentPage === 'recommend'}">
+                            <i class="fas fa-lightbulb"></i> 智能推荐
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#secondhand" @click="currentPage = 'secondhand'" class="nav-link" :class="{active: currentPage === 'secondhand'}">
+                            <i class="fas fa-exchange-alt"></i> 二手图书
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#reading" @click="currentPage = 'reading'" class="nav-link" :class="{active: currentPage === 'reading'}">
+                            <i class="fas fa-clock"></i> 阅读统计
+                        </a>
+                    </li>
+                    <li v-if="currentUser.role === 'admin' || currentUser.role === 'librarian'" class="nav-item">
+                        <a href="#stats" @click="currentPage = 'stats'" class="nav-link" :class="{active: currentPage === 'stats'}">
+                            <i class="fas fa-chart-bar"></i> 班级统计
+                        </a>
+                    </li>
+                    <li v-if="currentUser.role === 'admin' || currentUser.role === 'librarian'" class="nav-item">
+                        <a href="#alerts" @click="currentPage = 'alerts'" class="nav-link" :class="{active: currentPage === 'alerts'}">
+                            <i class="fas fa-bell"></i> 库存预警
+                        </a>
+                    </li>
+                    <li v-if="currentUser.role === 'admin' || currentUser.role === 'librarian'" class="nav-item">
+                        <a href="#requests" @click="currentPage = 'requests'" class="nav-link" :class="{active: currentPage === 'requests'}">
+                            <i class="fas fa-file-alt"></i> 采购申请
+                        </a>
+                    </li>
+                    <li class="nav-item mt-auto">
+                        <a href="#" @click="logout" class="nav-link text-danger">
+                            <i class="fas fa-sign-out-alt"></i> 退出登录
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <main class="main-content">
+                <div class="top-navbar">
+                    <span class="page-title">{{ pageTitle }}</span>
+                    <div class="navbar-right">
+                        <button class="btn btn-outline-primary btn-notification" @click="showNotification = true">
+                            <i class="fas fa-bell"></i>
+                            <span v-if="unreadCount > 0" class="badge badge-danger notification-badge">{{ unreadCount }}</span>
+                        </button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown">
+                                {{ currentUser.real_name }} ({{ roleText }})
+                            </button>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <a class="dropdown-item" href="#profile">个人信息</a>
+                                <a class="dropdown-item" href="#" @click="logout">退出登录</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'dashboard'">
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="dashboard-card bg-primary">
+                                <div class="d-flex justify-content-between">
+                                    <span class="card-label">图书总量</span>
+                                    <i class="fas fa-book card-icon"></i>
+                                </div>
+                                <div class="card-value">{{ dashboardStats.total_books }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card bg-success">
+                                <div class="d-flex justify-content-between">
+                                    <span class="card-label">读者数量</span>
+                                    <i class="fas fa-users card-icon"></i>
+                                </div>
+                                <div class="card-value">{{ dashboardStats.total_users }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card bg-info">
+                                <div class="d-flex justify-content-between">
+                                    <span class="card-label">借出数量</span>
+                                    <i class="fas fa-arrow-right card-icon"></i>
+                                </div>
+                                <div class="card-value">{{ dashboardStats.total_borrowed }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="dashboard-card bg-danger">
+                                <div class="d-flex justify-content-between">
+                                    <span class="card-label">逾期数量</span>
+                                    <i class="fas fa-exclamation-circle card-icon"></i>
+                                </div>
+                                <div class="card-value">{{ dashboardStats.overdue_count }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>借阅排行榜</h5>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th>排名</th>
+                                                <th>书名</th>
+                                                <th>借阅次数</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(book, index) in topBooks" :key="book.id">
+                                                <td>{{ index + 1 }}</td>
+                                                <td>{{ book.title }}</td>
+                                                <td>{{ book.borrow_count }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>我的借阅</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div v-if="myBorrows.length > 0">
+                                        <div v-for="borrow in myBorrows" :key="borrow.id" class="mb-2 p-2 bg-light rounded">
+                                            <div class="d-flex justify-content-between">
+                                                <span>{{ borrow.book_title }}</span>
+                                                <span :class="borrow.status === 'overdue' ? 'text-danger' : 'text-muted'">{{ formatDate(borrow.due_date) }}</span>
+                                            </div>
+                                            <span class="badge" :class="getStatusClass(borrow.status)">{{ getStatusText(borrow.status) }}</span>
+                                        </div>
+                                    </div>
+                                    <div v-else class="text-center text-muted py-4">
+                                        暂无借阅记录
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'books'">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>图书列表</h5>
+                            <div class="d-flex">
+                                <input v-model="searchKeyword" type="text" class="form-control mr-2" placeholder="搜索书名或作者" @keyup.enter="searchBooks">
+                                <select v-model="searchCategory" class="form-control mr-2">
+                                    <option value="">全部分类</option>
+                                    <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                                </select>
+                                <button @click="searchBooks" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                <button v-if="currentUser.role === 'admin' || currentUser.role === 'librarian'" @click="showAddBook = true" class="btn btn-success ml-2"><i class="fas fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ISBN</th>
+                                        <th>书名</th>
+                                        <th>作者</th>
+                                        <th>分类</th>
+                                        <th>库存</th>
+                                        <th>位置</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="book in filteredBooks" :key="book.id">
+                                        <td>{{ book.isbn }}</td>
+                                        <td>{{ book.title }}</td>
+                                        <td>{{ book.author }}</td>
+                                        <td><span class="badge badge-secondary">{{ book.category }}</span></td>
+                                        <td>
+                                            <span :class="book.available_stock <= 2 ? 'text-danger' : 'text-success'">
+                                                {{ book.available_stock }}/{{ book.total_stock }}
+                                            </span>
+                                        </td>
+                                        <td>{{ book.location }}</td>
+                                        <td>
+                                            <button @click="viewBook(book)" class="btn btn-sm btn-info"><i class="fas fa-eye"></i></button>
+                                            <button v-if="currentUser.role === 'admin' || currentUser.role === 'librarian'" @click="editBook(book)" class="btn btn-sm btn-warning ml-1"><i class="fas fa-edit"></i></button>
+                                            <button v-if="currentUser.role === 'admin'" @click="deleteBook(book.id)" class="btn btn-sm btn-danger ml-1"><i class="fas fa-trash"></i></button>
+                                            <button v-if="currentUser.role === 'student'" @click="borrowBook(book.id)" class="btn btn-sm btn-primary ml-1"><i class="fas fa-book-open"></i></button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'borrow'">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>借阅记录</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>书名</th>
+                                        <th>借阅日期</th>
+                                        <th>到期日期</th>
+                                        <th>归还日期</th>
+                                        <th>状态</th>
+                                        <th>续借次数</th>
+                                        <th>罚款</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="borrow in visibleBorrowRecords" :key="borrow.id">
+                                        <td>{{ borrow.book_title }}</td>
+                                        <td>{{ formatDate(borrow.borrow_date) }}</td>
+                                        <td>{{ formatDate(borrow.due_date) }}</td>
+                                        <td>{{ borrow.return_date ? formatDate(borrow.return_date) : '-' }}</td>
+                                        <td><span class="badge" :class="getStatusClass(borrow.status)">{{ getStatusText(borrow.status) }}</span></td>
+                                        <td>{{ borrow.renew_count }}/{{ maxRenewCount }}</td>
+                                        <td :class="borrow.fine > 0 ? 'text-danger' : ''">{{ borrow.fine > 0 ? borrow.fine + '元' : '-' }}</td>
+                                        <td>
+                                            <button v-if="borrow.status === 'borrowed' || borrow.status === 'overdue'" @click="renewBook(borrow.id)" class="btn btn-sm btn-warning">续借</button>
+                                            <button v-if="(currentUser.role === 'admin' || currentUser.role === 'librarian') && borrow.status !== 'returned'" @click="returnBook(borrow.id)" class="btn btn-sm btn-success">归还</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>扫码借还</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>扫描图书二维码</label>
+                                            <input v-model="scanData" type="text" class="form-control" placeholder="请输入二维码内容 (格式: BOOK:1)">
+                                        </div>
+                                        <button @click="scanBorrow" class="btn btn-primary mr-2">扫码借阅</button>
+                                        <button @click="scanReturn" class="btn btn-success">扫码归还</button>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="alert alert-info">
+                                            <p><strong>借阅规则：</strong></p>
+                                            <ul class="mb-0">
+                                                <li>每次最多借阅5本图书</li>
+                                                <li>借阅期限为30天</li>
+                                                <li>最多可续借2次</li>
+                                                <li>逾期每天罚款0.5元</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'recommend'">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>智能推荐</h5>
+                            <button @click="generateRecommendations" class="btn btn-primary">重新生成推荐</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div v-for="rec in recommendations" :key="rec.id" class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ rec.book_title }}</h6>
+                                            <p class="card-text text-sm text-muted">匹配度: {{ rec.score }}%</p>
+                                            <p class="card-text text-sm">{{ rec.reason }}</p>
+                                            <button @click="borrowBook(rec.book_id)" class="btn btn-sm btn-primary">立即借阅</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div v-if="recommendations.length === 0" class="text-center text-muted py-8">
+                                <i class="fas fa-lightbulb fa-4x mb-3"></i>
+                                <p>暂无推荐，请点击上方按钮生成推荐</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'secondhand'">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>二手图书市场</h5>
+                            <div>
+                                <input v-model="secondhandKeyword" type="text" class="form-control mr-2" placeholder="搜索书名" style="width: 200px; display: inline;">
+                                <button @click="searchSecondhand" class="btn btn-primary"><i class="fas fa-search"></i></button>
+                                <button @click="showAddSecondhand = true" class="btn btn-success ml-2"><i class="fas fa-plus"></i> 发布图书</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div v-for="book in filteredSecondhandBooks" :key="book.id" class="col-md-4 mb-4">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ book.title }}</h6>
+                                            <p class="card-text text-sm text-muted">作者: {{ book.author }}</p>
+                                            <p class="card-text text-sm">售价: <span class="text-primary font-weight-bold">{{ book.price }}元</span></p>
+                                            <p class="card-text text-sm">状态: <span :class="getConditionClass(book.condition)">{{ getConditionText(book.condition) }}</span></p>
+                                            <p class="card-text text-sm text-muted">卖家: {{ book.seller_name }}</p>
+                                            <p class="card-text text-sm">{{ book.description }}</p>
+                                            <button v-if="book.status === 'available' && book.user_id !== currentUser.id" @click="buySecondhand(book.id)" class="btn btn-sm btn-primary">购买</button>
+                                            <span v-else-if="book.user_id === currentUser.id" class="badge badge-secondary">自己发布的</span>
+                                            <span v-else class="badge badge-secondary">{{ book.status === 'reserved' ? '已被预定' : '已售出' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="myTransactions.length > 0" class="card mt-4">
+                        <div class="card-header">
+                            <h5>我的交易记录</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>书名</th>
+                                        <th>买家</th>
+                                        <th>卖家</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="t in myTransactions" :key="t.id">
+                                        <td>{{ t.book_title }}</td>
+                                        <td>{{ t.buyer_name }}</td>
+                                        <td>{{ t.seller_name }}</td>
+                                        <td><span :class="getTransactionStatusClass(t.status)" class="badge">{{ getTransactionStatusText(t.status) }}</span></td>
+                                        <td>
+                                            <button v-if="t.status === 'pending'" @click="completeTransaction(t.id)" class="btn btn-sm btn-success">确认交易</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'reading'">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>阅读统计</h5>
+                            <button @click="showAddReading = true" class="btn btn-primary"><i class="fas fa-plus"></i> 添加阅读记录</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <div class="card bg-info text-white p-4">
+                                        <div class="text-center">
+                                            <i class="fas fa-clock fa-3x mb-2"></i>
+                                            <h3>{{ readingStats.total_minutes }} 分钟</h3>
+                                            <p>累计阅读时长</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">月度阅读统计</div>
+                                <div class="card-body">
+                                    <canvas id="readingChart"></canvas>
+                                    <div v-if="readingStats.monthly_stats.length === 0" class="text-center text-muted py-4">暂无阅读数据</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'stats'">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>班级阅读数据统计</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>专业</th>
+                                        <th>人数</th>
+                                        <th>累计阅读时长</th>
+                                        <th>借阅总量</th>
+                                        <th>人均阅读时长</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="stat in classStats" :key="stat.major">
+                                        <td>{{ stat.major }}</td>
+                                        <td>{{ stat.total_users }}</td>
+                                        <td>{{ stat.total_reading_minutes }} 分钟</td>
+                                        <td>{{ stat.total_borrows }}</td>
+                                        <td>{{ stat.total_users > 0 ? (stat.total_reading_minutes / stat.total_users).toFixed(0) : 0 }} 分钟</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'alerts'">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>库存预警</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>书名</th>
+                                        <th>当前库存</th>
+                                        <th>预警阈值</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="alert in activeAlerts" :key="alert.id">
+                                        <td>{{ alert.book_title }}</td>
+                                        <td class="text-danger">{{ alert.current_stock }}</td>
+                                        <td>{{ alert.threshold }}</td>
+                                        <td><span class="badge badge-danger">{{ alert.status === 'active' ? '预警中' : '已处理' }}</span></td>
+                                        <td>
+                                            <button v-if="alert.status === 'active'" @click="resolveAlert(alert.id)" class="btn btn-sm btn-success">标记已处理</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="currentPage === 'requests'">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>图书采购申请</h5>
+                            <button v-if="currentUser.role === 'student'" @click="showAddRequest = true" class="btn btn-primary"><i class="fas fa-plus"></i> 申请采购</button>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>书名</th>
+                                        <th>作者</th>
+                                        <th>ISBN</th>
+                                        <th>申请人</th>
+                                        <th>申请理由</th>
+                                        <th>状态</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="req in visibleBookRequests" :key="req.id">
+                                        <td>{{ req.title }}</td>
+                                        <td>{{ req.author }}</td>
+                                        <td>{{ req.isbn }}</td>
+                                        <td>{{ req.user_name }}</td>
+                                        <td>{{ req.reason }}</td>
+                                        <td><span :class="getRequestStatusClass(req.status)" class="badge">{{ getRequestStatusText(req.status) }}</span></td>
+                                        <td>
+                                            <button v-if="(currentUser.role === 'admin' || currentUser.role === 'librarian') && req.status === 'pending'" @click="updateRequest(req.id, 'approved')" class="btn btn-sm btn-success">批准</button>
+                                            <button v-if="(currentUser.role === 'admin' || currentUser.role === 'librarian') && req.status === 'pending'" @click="updateRequest(req.id, 'rejected')" class="btn btn-sm btn-danger ml-1">拒绝</button>
+                                            <button v-if="(currentUser.role === 'admin' || currentUser.role === 'librarian') && req.status === 'approved'" @click="updateRequest(req.id, 'purchased')" class="btn btn-sm btn-info">已采购</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-if="showNotification" class="modal fade" tabindex="-1" role="dialog">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">通知消息</h5>
+                                <button type="button" class="close" data-dismiss="modal">×</button>
+                            </div>
+                            <div class="modal-body">
+                                <div v-for="notif in notifications" :key="notif.id" class="mb-3 p-3" :class="notif.read ? 'bg-light' : 'bg-primary text-white'">
+                                    <h6>{{ notif.title }}</h6>
+                                    <p class="text-sm">{{ notif.content }}</p>
+                                    <span class="text-xs">{{ formatDateTime(notif.created_at) }}</span>
+                                </div>
+                                <div v-if="notifications.length === 0" class="text-center text-muted">暂无通知</div>
+                            </div>
+                            <div class="modal-footer">
+                                <button @click="markAllRead" class="btn btn-secondary">全部标为已读</button>
+                                <button type="button" class="btn btn-primary" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div v-if="showAddBook" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">{{ editBookData ? '编辑图书' : '添加图书' }}</h5>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="saveBook">
+                            <div class="form-group">
+                                <label>ISBN</label>
+                                <input v-model="bookForm.isbn" type="text" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>书名</label>
+                                <input v-model="bookForm.title" type="text" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>作者</label>
+                                <input v-model="bookForm.author" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>出版社</label>
+                                <input v-model="bookForm.publisher" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>分类</label>
+                                <input v-model="bookForm.category" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>位置</label>
+                                <input v-model="bookForm.location" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>总库存</label>
+                                <input v-model.number="bookForm.total_stock" type="number" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>可借数量</label>
+                                <input v-model.number="bookForm.available_stock" type="number" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>价格</label>
+                                <input v-model.number="bookForm.price" type="number" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>简介</label>
+                                <textarea v-model="bookForm.description" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>关键词</label>
+                                <input v-model="bookForm.keywords" type="text" class="form-control" placeholder="用逗号分隔">
+                            </div>
+                            <button type="submit" class="btn btn-primary">保存</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showAddSecondhand" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">发布二手图书</h5>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="saveSecondhand">
+                            <div class="form-group">
+                                <label>书名</label>
+                                <input v-model="secondhandForm.title" type="text" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>作者</label>
+                                <input v-model="secondhandForm.author" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>ISBN</label>
+                                <input v-model="secondhandForm.isbn" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>成色</label>
+                                <select v-model="secondhandForm.condition" class="form-control">
+                                    <option value="like_new">全新</option>
+                                    <option value="good">良好</option>
+                                    <option value="fair">一般</option>
+                                    <option value="poor">较差</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>售价</label>
+                                <input v-model.number="secondhandForm.price" type="number" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>描述</label>
+                                <textarea v-model="secondhandForm.description" class="form-control"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">发布</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showAddReading" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">添加阅读记录</h5>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="saveReading">
+                            <div class="form-group">
+                                <label>图书</label>
+                                <select v-model="readingForm.book_id" class="form-control" required>
+                                    <option value="">请选择图书</option>
+                                    <option v-for="book in books" :key="book.id" :value="book.id">{{ book.title }}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>阅读时长（分钟）</label>
+                                <input v-model.number="readingForm.minutes" type="number" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">保存</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div v-if="showAddRequest" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">图书采购申请</h5>
+                        <button type="button" class="close" data-dismiss="modal">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <form @submit.prevent="saveRequest">
+                            <div class="form-group">
+                                <label>书名</label>
+                                <input v-model="requestForm.title" type="text" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>作者</label>
+                                <input v-model="requestForm.author" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>ISBN</label>
+                                <input v-model="requestForm.isbn" type="text" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>申请理由</label>
+                                <textarea v-model="requestForm.reason" class="form-control"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">提交申请</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
