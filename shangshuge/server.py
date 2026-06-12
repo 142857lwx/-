@@ -1,0 +1,13 @@
+import http.server
+import socketserver
+import os
+
+PORT = 8080
+
+Handler = http.server.SimpleHTTPRequestHandler
+
+os.chdir('frontend')
+
+with socketserver.TCPServer(("", PORT), Handler) as httpd:
+    print(f"Server running on http://localhost:{PORT}")
+    httpd.serve_forever()
